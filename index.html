@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pizza Delivery Admin Dashboard</title>
+  <style>
+    /* ------------ GLOBAL ------------ */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #343a40;
+    }
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    /* ------------ HEADER ------------ */
+    header {
+      background-color: #e63946;
+      color: white;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      animation: slideDown 0.6s ease;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      border: 3px solid white;
+      object-fit: cover;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      padding: 0;
+      margin: 0;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: 5px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    nav ul li a:hover {
+      background-color: rgba(255,255,255,0.2);
+      transform: scale(1.05);
+    }
+    /* ------------ DASHBOARD LAYOUT ------------ */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+    }
+    /* Sidebar */
+    .sidebar {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1.2rem;
+      animation: fadeIn 0.8s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .sidebar-menu { list-style: none; padding: 0; }
+    .sidebar-menu li { margin-bottom: 1rem; }
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #495057;
+      text-decoration: none;
+      padding: 0.6rem;
+      border-radius: 6px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .sidebar-menu a:hover {
+      background-color: #f1f3f5;
+      transform: translateX(5px);
+    }
+    .sidebar-menu img { width: 24px; height: 24px; }
+    /* ------------ MAIN CONTENT ------------ */
+    .main-content {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1.2rem;
+      animation: fadeIn 0.9s ease;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 1rem;
+      text-align: center;
+      transition: transform 0.3s;
+      animation: slideUp 0.8s ease;
+    }
+    .stat-card:hover { transform: translateY(-5px) scale(1.03); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .stat-card h3 { color: #868e96; margin: 0; }
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0.3rem 0;
+      color: #343a40;
+    }
+    /* ------------ TABLES ------------ */
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 1s ease;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid #e9ecef;
+    }
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    .pizza-img {
+      width: 55px; height: 55px;
+      border-radius: 6px; object-fit: cover;
+    }
+    .user-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%; object-fit: cover;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .status-received { background: #fff3bf; color: #f08c00; }
+    .status-kitchen { background: #d0ebff; color: #1971c2; }
+    .status-delivery { background: #d3f9d8; color: #2b8a3e; }
+    .action-btn {
+      padding: 0.4rem 0.9rem;
+      border: none; border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .btn-primary { background: #339af0; color: white; }
+    .btn-primary:hover { background: #228be6; transform: scale(1.05); }
+    .btn-danger { background: #ff6b6b; color: white; }
+    .btn-danger:hover { background: #fa5252; transform: scale(1.05); }
+    .inventory-warning { color: #e03131; font-weight: 600; }
+    /* ------------ RESPONSIVE ------------ */
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: none; /* hide sidebar */
+      }
+    }
+    @media (max-width: 600px) {
+      nav ul { flex-direction: column; gap: 8px; }
+      .logo h1 { font-size: 1.2rem; }
+      .stat-card .value { font-size: 1.5rem; }
+      th, td { padding: 0.6rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <div class="logo">
+          <img src="https://placehold.co/400x400/red/white?text=PD" alt="Pizza Delivery logo">
+          <h1>Pizza Delivery Admin</h1>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Logout</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div class="dashboard-grid">
+      <aside class="sidebar">
+        <ul class="sidebar-menu">
+          <li><a href="#"><img src="https://placehold.co/100x100/gray/white?text=📊"> Dashboard</a></li>
+          <li><a href="#"><img src="https://placehold.co/100x100/gray/white?text=🍕"> Orders</a></li>
+          <li><a href="#"><img src="https://placehold.co/100x100/gray/white?text=📦"> Inventory</a></li>
+          <li><a href="#"><img src="https://placehold.co/100x100/gray/white?text=👤"> Users</a></li>
+          <li><a href="#"><img src="https://placehold.co/100x100/gray/white?text=📈"> Reports</a></li>
+          <li><a href="#"><img src="https://placehold.co/100x100/gray/white?text=⚙"> Settings</a></li>
+        </ul>
+      </aside>
+
+      <main class="main-content">
+        <!-- Dashboard Stats -->
+        <div class="stats-grid">
+          <div class="stat-card"><h3>New Orders</h3><div class="value">24</div><div>Today</div></div>
+          <div class="stat-card"><h3>Revenue</h3><div class="value">$1,284</div><div>Today</div></div>
+          <div class="stat-card"><h3>Active Users</h3><div class="value">48</div><div>Today</div></div>
+          <div class="stat-card"><h3>Low Stock</h3><div class="value">3</div><div>Items</div></div>
+        </div>
+
+        <!-- Orders -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Recent Orders</h2>
+            <button class="action-btn btn-primary">View All</button>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Order ID</th><th>Customer</th><th>Pizza</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#PD-4582</td>
+                <td><div style="display:flex;align-items:center;gap:10px;"><img src="https://placehold.co/400x400/444/fff?text=JD" class="user-avatar"> John Doe</div></td>
+                <td><div style="display:flex;align-items:center;gap:10px;"><img src="https://placehold.co/400x400/ddd/333?text=Marg" class="pizza-img"> Margherita</div></td>
+                <td><span class="status-badge status-received">Order Received</span></td>
+                <td><button class="action-btn btn-primary" onclick="updateOrderStatus('PD-4582','In Kitchen')">Prepare</button></td>
+              </tr>
+              <tr>
+                <td>#PD-4581</td>
+                <td><div style="display:flex;align-items:center;gap:10px;"><img src="https://placehold.co/400x400/444/fff?text=MS" class="user-avatar"> Mary Smith</div></td>
+                <td><div style="display:flex;align-items:center;gap:10px;"><img src="https://placehold.co/400x400/ddd/333?text=Pepp" class="pizza-img"> Pepperoni</div></td>
+                <td><span class="status-badge status-kitchen">In Kitchen</span></td>
+                <td><button class="action-btn btn-primary" onclick="updateOrderStatus('PD-4581','Out for Delivery')">Ready</button></td>
+              </tr>
+              <tr>
+                <td>#PD-4580</td>
+                <td><div style="display:flex;align-items:center;gap:10px;"><img src="https://placehold.co/400x400/444/fff?text=AR" class="user-avatar"> Alex Rodriguez</div></td>
+                <td><div style="display:flex;align-items:center;gap:10px;"><img src="https://placehold.co/400x400/ddd/333?text=Veg" class="pizza-img"> Vegetarian</div></td>
+                <td><span class="status-badge status-delivery">Out for Delivery</span></td>
+                <td><button class="action-btn btn-primary" disabled>Delivered</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Inventory -->
+        <div class="card">
+          <div class="card-header"><h2>Inventory Status</h2></div>
+          <table>
+            <thead>
+              <tr><th>Item</th><th>Category</th><th>Stock</th><th>Threshold</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Thin Crust Base</td><td>Bases</td><td>45</td><td>10</td><td>OK</td><td><button class="action-btn btn-primary">Reorder</button></td></tr>
+              <tr><td>Tomato Sauce</td><td>Sauces</td><td>5</td><td>10</td><td class="inventory-warning">LOW</td><td><button class="action-btn btn-primary">Reorder</button></td></tr>
+              <tr><td>Mozzarella Cheese</td><td>Cheeses</td><td>8</td><td>10</td><td class="inventory-warning">LOW</td><td><button class="action-btn btn-primary">Reorder</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Users -->
+        <div class="card">
+          <div class="card-header"><h2>Active Users</h2></div>
+          <table>
+            <thead>
+              <tr><th>Avatar</th><th>Name</th><th>Email</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="https://placehold.co/50x50/228be6/fff?text=A" class="user-avatar"></td>
+                <td>Alice Johnson</td>
+                <td>alice@example.com</td>
+                <td>Admin</td>
+              </tr>
+              <tr>
+                <td><img src="https://placehold.co/50x50/51cf66/fff?text=B" class="user-avatar"></td>
+                <td>Bob Martin</td>
+                <td>bob@example.com</td>
+                <td>Manager</td>
+              </tr>
+              <tr>
+                <td><img src="https://placehold.co/50x50/ff6b6b/fff?text=C" class="user-avatar"></td>
+                <td>Charlie Brown</td>
+                <td>charlie@example.com</td>
+                <td>Delivery</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Reports -->
+        <div class="card">
+          <div class="card-header"><h2>Sales Report</h2></div>
+          <img src="https://placehold.co/800x300/74c0fc/fff?text=Sales+Graph" alt="Sales Chart" style="width:100%;border-radius:8px;">
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+          <div class="card-header"><h2>Settings</h2></div>
+          <p>⚙ Here you can manage application preferences, themes, and notifications.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function updateOrderStatus(orderId, newStatus) {
+      alert(`Changing order ${orderId} status to ${newStatus}`);
+    }
+  </script>
+</body>
+</html>
